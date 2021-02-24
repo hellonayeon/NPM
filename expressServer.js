@@ -12,6 +12,10 @@ app.get('/ejs', function(req, res) {
     res.render('ejsTest');
 })
 
+app.post('/userData', function(req, res) { // 사용자의 요청을 POST로 받는 라우터 생성
+  console.log("사용자의 요청이 발생했습니다.")
+}) 
+
 app.get('/user', function (req, res) {
     connection.query('SELECT * FROM user', function (error, results, fields) {
         if (error) throw error;
