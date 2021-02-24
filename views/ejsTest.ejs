@@ -13,11 +13,15 @@
             $.ajax({
                 url: "/userData",
                 type: "POST",
-                data: {
-
+                data: { // request form data 에 담기는 내용 (key data)
+                    userData1 : userInput,
+                    userData2 : userInput2
                 },
                 success: function (data) {
-
+                    console.log(data); // response(server) data [true, false]
+                    if(data == true) {
+                        alert("요청 성공");
+                    }
                 }
             })
         })
