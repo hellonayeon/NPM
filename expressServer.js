@@ -46,7 +46,7 @@ app.get('/authResult', function(req, res) {
       else {
           var accessRequestResult = JSON.parse(body);
           console.log(accessRequestResult);
-          res.send(accessRequestResult);
+          res.render('resultChild', {data : accessRequestResult});
       }
   })
 });
