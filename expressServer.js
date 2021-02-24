@@ -17,26 +17,8 @@ app.get('/', function (req, res) {
   res.send('Hello World');
 })
 
-app.get('/ejs', function(req, res) {
-    res.render('ejsTest');
-})
-
-app.get('/designTest', function(req, res) {
-    res.render('designSample');
-})
-
-app.post('/userData', function(req, res) { // 사용자의 요청을 POST로 받는 라우터 생성
-  console.log("사용자의 요청이 발생했습니다.")
-  console.log(req.body) // 서버에서 request body 를 허용한다는 선언 필요
-  res.send(true);
-}) 
-
-app.get('/user', function (req, res) {
-    connection.query('SELECT * FROM user', function (error, results, fields) {
-        if (error) throw error;
-        console.log(results);
-        res.send(results[0]);
-    });
+app.get('/signup', function(req, res) {
+  res.render('signup');
 })
 
 var mysql      = require('mysql');
