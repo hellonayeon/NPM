@@ -32,6 +32,10 @@ app.get('/authTest', auth, function(req, res) {
   res.send("정상적으로 로그인 하셨다면 해당 화면이 보여집니다.");
 })
 
+app.get('/balance', function(req, res) {
+  res.render('balance');
+})
+
 app.get('/authResult', function (req, res) {
   var authCode = req.query.code;
   var option = {
@@ -158,7 +162,9 @@ app.post('/list', auth, function(req, res){
               }
               else {
                   var listRequestResult = JSON.parse(body);
+
                   res.json(listRequestResult)
+                  console.log(listRequestResult)
               }
           })        
       }
