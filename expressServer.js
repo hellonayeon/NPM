@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path'); // 라이브러리 불러오기
 const request = require('request');
+const moment = require('moment');
+
 var jwt = require('jsonwebtoken');
 var auth = require('./lib/auth');
 const app = express();
@@ -15,6 +17,8 @@ app.use(express.static(path.join(__dirname, 'public'))); //to use static asset (
 
 app.set('views', __dirname + '/views'); // 뷰 파일이 있는 디렉토리를 설정
 app.set('view engine', 'ejs'); // 뷰 엔진으로 EJS 사용 선언
+
+var companyId = "M202111592U";
 
 app.get('/', function (req, res) {
   res.send('Hello World');
@@ -169,6 +173,47 @@ app.post('/list', auth, function(req, res){
           })        
       }
   })
+})
+
+app.post('/balance', auth, function(req, res) {
+  //사용자 정보 조회
+    //사용자 정보를 바탕으로 request (잔액조회 api) 요청 작성하기
+    var user = req.decoded;
+    var finusernum = req.body.fin_use_num;
+    var countnum = Math.floor(Math.random() * 1000000000) + 1;
+    var transId = companyId + countnum;  
+    var transdtime = moment(new Date()).format('YYYYMMDDhhmmss');
+    console.log(transdtime);
+    var sql = "SELECT * FROM user WHERE id = ?";
+    connection.query(sql,[user.userId], function(err, result){
+        if(err) throw err;
+        else {
+            var dbUserData = result[0];
+            console.log(dbUserData);
+            var option = {
+                method : "GET",
+                url : "https://testapi.openbanking.or.kr/v2.0/account/balance/fin_num",
+                headers : {
+                    Authorization : "Bearer " + dbUserData.accesstoken
+                },
+                qs : {
+                    bank_tran_id : transId,
+                    fintech_use_num : finusernum,
+                    tran_dtime : transdtime
+                }
+            }
+            request(option, function(err, response, body){
+                if(err){
+                    console.error(err);
+                    throw err;
+                }
+                else {
+                    var balanceRquestResult = JSON.parse(body);
+                    res.json(balanceRquestResult)
+                }
+            })        
+        }
+    })
 })
 
 var mysql = require('mysql');
