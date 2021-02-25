@@ -128,6 +128,10 @@ app.post('/login', function (req, res) {
   })
 })
 
+app.get('/main', function(req, res){
+  res.render('main');
+})
+
 var mysql = require('mysql');
 var connection = mysql.createConnection({
   host: 'localhost',
