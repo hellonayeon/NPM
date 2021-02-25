@@ -132,6 +132,32 @@ app.get('/main', function(req, res){
   res.render('main');
 })
 
+app.post('/list', auth, function(req, res){
+  var user = req,decoded; // 사용자의 토큰으로부터 누가 들어왔는지 확인 가능
+  console.log(user);
+  var option = {
+      method : "GET",
+      url : "https://testapi.openbanking.or.kr/v2.0/user/me",
+      headers : {
+        'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTAwNzcwMjA0Iiwic2NvcGUiOlsiaW5xdWlyeSIsImxvZ2luIiwidHJhbnNmZXIiXSwiaXNzIjoiaHR0cHM6Ly93d3cub3BlbmJhbmtpbmcub3Iua3IiLCJleHAiOjE2MjE5OTI3MTYsImp0aSI6ImMzNDUwYzY4LWQ3ZTQtNDk0OC1iNWQwLWI5ZTRkZDVhY2I4ZCJ9.gx3f7ctzOJdXwxJLuWUtYsuPPRXEpcSPyhey3asqEY8'
+      },
+      qs : {
+        user_seq_no : '1100770204'
+      }
+  }
+  request(option, function(err, response, body){
+      if(err){
+          console.error(err);
+          throw err;
+      }
+      else {
+          var listRequestResult = JSON.parse(body);
+          console.log(listRequestResult);
+          res.json(listRequestResult)
+      }
+  })
+})
+
 var mysql = require('mysql');
 var connection = mysql.createConnection({
   host: 'localhost',
