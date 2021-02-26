@@ -290,7 +290,7 @@
       });
       var jwtToken = sessionStorage.getItem("ourtoken");
       var toFinUseNo = undefined;
-      scanner.addListener("scan", function (content) {
+      scanner.addListener("scan", function (content) { // QR 코드가 읽혀진 시점
         console.log(content);
         toFinUseNo = content;
         $("#largePopup").show();

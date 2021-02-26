@@ -44,6 +44,10 @@ app.get('/qrcode', function(req, res) {
   res.render('qrcode');
 })
 
+app.get('/qrreader', function(req, res) {
+  res.render('qrreader');
+})
+
 app.get('/authResult', function (req, res) {
   var authCode = req.query.code;
   var option = {
@@ -264,6 +268,60 @@ app.post('/transactionList', auth, function(req, res){
     }
   })
 }) 
+
+// QR 코드를 읽히면 결제 팝업 생성
+app.post('/withdraw', auth, function(req, res) {
+  // 사용자 출금 이체 API 수행하기
+  console.log(req.body);
+  var user = req.decoded;
+  var countnum = Math.floor(Math.random() * 1000000000) + 1;
+  var transId = companyId + countnum;
+  var sql = "SELECT * FROM user WHERE id = ?";
+  connection.query(sql, [user.userId], function (err, result) {
+    if (err) throw err;
+    else {
+      var dbUserData = result[0];
+      console.log(dbUserData);
+      var option = {
+        method: "POST",
+        url: "https://testapi.openbanking.or.kr/v2.0/transfer/withdraw/fin_num",
+        headers: {
+          Authorization: "Bearer " + dbUserData.accesstoken,
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+        json: { // 헤더에 Content-Type이 자동으로 붙도록 만들어줌.
+          bank_tran_id: transId,
+          cntr_account_type: "N",
+          cntr_account_num: "100000000001",
+          dps_print_content: "쇼핑몰환불",
+          fintech_use_num: "120211159288932125761183",
+          wd_print_content: "오픈뱅킹출금",
+          tran_amt: "10000",
+          tran_dtime: "20210225164000",
+          req_client_name: "홍길동",
+          req_client_fintech_use_num: "120211159288932125761183",
+          req_client_num: "HONGGILDONG1234",
+          transfer_purpose: "TR",
+          recv_client_name: "권나연",
+          recv_client_bank_code: "097",
+          recv_client_account_num: "123412341234"
+        }
+      }
+      request(option, function (err, response, body) {
+        if (err) {
+          console.error(err);
+          throw err;
+        }
+        else {
+          console.log("print withdraw result");
+          var withdrawRequestResult = body;
+          console.log(body);
+          res.json(withdrawRequestResult)
+        }
+      })
+    }
+  })
+})
 
 var mysql = require('mysql');
 var connection = mysql.createConnection({
