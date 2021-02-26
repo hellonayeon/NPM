@@ -276,6 +276,7 @@ app.post('/withdraw', auth, function(req, res) {
   var user = req.decoded;
   var countnum = Math.floor(Math.random() * 1000000000) + 1;
   var transId = companyId + countnum;
+  var transdtime = moment(new Date()).format('YYYYMMDDhhmmss');
   var sql = "SELECT * FROM user WHERE id = ?";
   connection.query(sql, [user.userId], function (err, result) {
     if (err) throw err;
@@ -294,12 +295,12 @@ app.post('/withdraw', auth, function(req, res) {
           cntr_account_type: "N",
           cntr_account_num: "100000000001",
           dps_print_content: "쇼핑몰환불",
-          fintech_use_num: "120211159288932125761183",
+          fintech_use_num: req.body.fin_use_num,
           wd_print_content: "오픈뱅킹출금",
-          tran_amt: "10000",
-          tran_dtime: "20210225164000",
+          tran_amt: req.body.amount,
+          tran_dtime: transdtime,
           req_client_name: "홍길동",
-          req_client_fintech_use_num: "120211159288932125761183",
+          req_client_fintech_use_num: req.body.fin_use_num,
           req_client_num: "HONGGILDONG1234",
           transfer_purpose: "TR",
           recv_client_name: "권나연",
@@ -321,6 +322,7 @@ app.post('/withdraw', auth, function(req, res) {
       })
     }
   })
+  // 사용자로부터 PIN 입력받는 것 추가 필요
 })
 
 var mysql = require('mysql');
