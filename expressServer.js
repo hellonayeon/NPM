@@ -314,10 +314,51 @@ app.post('/withdraw', auth, function(req, res) {
           throw err;
         }
         else {
-          console.log("print withdraw result");
           var withdrawRequestResult = body;
+          //res.json(withdrawRequestResult); // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
           console.log(body);
-          res.json(withdrawRequestResult)
+
+          // 입금 API 실행
+          if (withdrawRequestResult.rsp_code == "A0000") {
+            var countnum2 = Math.floor(Math.random() * 1000000000) + 1;
+            var transId2 = companyId + countnum2;
+            var transdtime2 = moment(new Date()).format('YYYYMMDDhhmmss');
+            var option = {
+              method: "POST",
+              url: "https://testapi.openbanking.or.kr/v2.0/transfer/deposit/fin_num",
+              headers: {
+                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJNMjAyMTExNTkyIiwic2NvcGUiOlsib29iIl0sImlzcyI6Imh0dHBzOi8vd3d3Lm9wZW5iYW5raW5nLm9yLmtyIiwiZXhwIjoxNjIyMDg5MTMxLCJqdGkiOiIxZGI1ODU4NC0yNzkzLTRjMzgtYThkMC02ZDY2MWYzYWJkMWEifQ.QIwT-U75sdZtDdEmFHMiYEKu_w9V-bh7fbfQhoZs6Q4"
+              },
+              //get 요청을 보낼때 데이터는 qs, post 에 form, json 입력가능
+              json: {
+                "cntr_account_type": "N",
+                "cntr_account_num": "200000000001",
+                "wd_pass_phrase": "NONE",
+                "wd_print_content": "환불금액",
+                "name_check_option": "off",
+                "tran_dtime": transdtime2,
+                "req_cnt": "1",
+                "req_list": [
+                  {
+                    "tran_no": "1",
+                    "bank_tran_id": transId2,
+                    "fintech_use_num": req.body.to_fin_use_num,
+                    "print_content": "쇼핑몰환불",
+                    "tran_amt": req.body.amount,
+                    "req_client_name": "홍길동",
+                    "req_client_num": "HONGGILDONG1234",
+                    "req_client_fintech_use_num": req.body.fin_use_num,
+                    "transfer_purpose": "ST"
+                  }
+                ]
+              }
+            }
+            request(option, function (error, response, body) {
+              console.log(body);
+              res.json(body);
+            });
+
+          }
         }
       })
     }
